@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cifra de César</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            text-align: center;
+            font-family: Arial, Helvetica, sans-serif;
+            
+           
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: #CCBB6E;
+            box-shadow: inset  0  300px 300px -300px hsla(0,0%,0%,.8), 
+                        inset  0 -300px 300px -300px hsla(0,0%,0%,.8);
+        }
+
+        main {
+            max-width: 600px;
+            margin: auto;
+        }
+
+        h1 {
+            font-size: 36px;
+            color: #807545;
+            padding: 10px 0;
+        }
+
+        textarea {
+            width: 85%;
+            max-width: 500px;
+            height: 100px;
+            border: none;
+            border-radius: 10px;
+            vertical-align: top;
+            outline: none;
+            padding: 10px;
+            font-size: 18px;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 120px;
+            height: 30px;
+            border: none;
+            background-color: #807545;
+            color: #FFF8D6;
+            border-radius: 5px;
+            margin: 15px 3px;
+            cursor: pointer;
+            transition: 0.5s;
+            outline: none;
+        }
+
+        button:hover {
+            background-color: #807C6B;
+        }
+
+        footer {
+            font-size: 18px;
+            font-weight: bold;
+            color: #807545;
+            margin-top: 20px;
+        }
+
+        @media screen and (min-width: 500px) {
+            textarea {
+                height: 200px;
+            }
+            
+        }
+        
+    </style>
+</head>
+<body>
+    <main>
+        <h1>Cifra de César</h1>
+        <textarea id="sentence" placeholder="sentença" ></textarea>
+        <button id="encrypt" onclick="encryptSentence()">Criptografar</button>
+        <button id="decrypt" onclick="decryptSentence()">Descriptografar</button>
+
+        <textarea id="result" placeholder="resultado"></textarea>
+    </main>
+
+    <footer>
+        <p>Criado por Edgar Oliveira Cardoso</p>
+    </footer>
+
+    <script>
+        var sentence = document.getElementById('sentence')
+
+        var letterCode
+        var offset 
+
+        const replaceSpecialChars = (sentence) => {
+	        return sentence.normalize('NFD').replace(/[\u0300-\u036f]/g, '') 
+		        .replace(/([^\w]+|\s+)/g, '') 
+		        .replace(/\-\-+/g, '')	
+		        .replace(/(^-+|-+$)/, '')
+        }
+
+        function encryptSentence() {
+            var encrypt = document.getElementById('result')
+
+            var sentenceValue = replaceSpecialChars(sentence.value.toUpperCase())
+
+            encrypt.innerHTML = ''
+
+            for(var pos in sentenceValue) {
+                letterCode = sentenceValue.charCodeAt(pos) - 65
+                offset = (letterCode + 3) % 26
+                offset += 65
+
+                encrypt.innerHTML += String.fromCharCode(offset)
+            }
+        }
+
+        function decryptSentence() {
+            var decrypt = document.getElementById('result')
+
+            sentenceValue = sentence.value
+
+            decrypt.innerHTML = ''
+
+            for(var pos in sentenceValue) {
+                letterCode = sentenceValue.charCodeAt(pos) - 65
+                offset = letterCode - 3
+                
+                if(offset < 0)
+                    offset += 25
+
+                offset += 65
+
+                decrypt.innerHTML+= String.fromCharCode(offset)
+            }
+        }
+    </script>
+</body>
+</html>

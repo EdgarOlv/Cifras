@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cerca de Ferrovia</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            font-family: cursive;
+        }
+
+        body {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            min-height: 550px;
+            background-color: #f7d7ca;
+            box-shadow: inset  0  300px 300px -300px hsla(0,0%,0%,.8), 
+                        inset  0 -300px 300px -300px hsla(0,0%,0%,.8);
+        }
+
+        header, footer {
+            height: 80px;
+            background-color: #6295B3;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        header h1 {
+            font-size: 24px;
+        }
+
+        main {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin-right: -50%;
+            transform: translate(-50%, -50%);
+        }
+
+        main textarea {
+            width: 250px;
+            height: 100px;
+            padding: 10px;
+            border-radius: 15px;
+            border: none;
+            outline: none;
+            resize: none;
+            box-sizing: border-box;
+        }
+
+        main .button {
+            text-align: center;
+            padding: 24px 0 30px;
+        }
+
+        .button button {
+            width: 110px;
+            height: 25px;
+            background-color: #6295B3;
+            border: none;
+            outline: none;
+            border-radius: 5px;
+            font-weight: bold;
+            color: #fff;
+            margin: 0 5px;
+        }
+
+        footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+        }
+
+        @media screen and (min-width: 400px) {
+            main textarea {
+                width: 300px;
+                height: 120px;
+            }
+
+            .button button {
+                width: 132px;
+                height: 30px; 
+            }
+        }
+
+        @media screen and (min-width: 550px) {
+            body {
+                min-height: 600px;
+            }
+
+            header h1 {
+                font-size: 36px;
+            }
+
+            main textarea {
+                width: 375px;
+                height: 150px;
+                font-size: 24px;
+            }
+
+            .button button {
+                width: 175px;
+                height: 40px; 
+                cursor: pointer;
+                transition: 0.7;
+                font-size: 18px;
+            }
+
+            button:hover {
+                background-color: #407391;
+            }
+
+            footer p {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Cifra de Transposição</h1>
+    </header>
+
+    <main>
+        <section>
+            <textarea id="sentence" placeholder="sentença"></textarea>
+
+            <div class="button">
+                <button id="encrypt">Criptografar</button>
+                <button id="decrypt">Descriptografar</button>
+            </div>
+
+            <textarea id="result" placeholder="resultado"></textarea>
+        </section>
+    </main>
+
+    <footer>
+        <p>Criado por Edgar Oliveira Cardoso</p>
+    </footer>
+
+    <script>
+        let sentence = document.getElementById('sentence')
+        let result = document.getElementById('result')
+
+        let encrypt = document.getElementById('encrypt')
+        let decrypt = document.getElementById('decrypt')
+
+        let odd = []
+        let even = []
+        let modifiedSentence = []
+
+        const replaceSpecialChars = (sentence) => {
+	        return sentence.normalize('NFD').replace(/[\u0300-\u036f]/g, '') 
+		        .replace(/([^\w]+|\s+)/g, '') 
+		        .replace(/\-\-+/g, '')	
+		        .replace(/(^-+|-+$)/, '')
+        }
+
+        function encryptSentence() {
+            let sentenceValue = replaceSpecialChars(sentence.value.toUpperCase())
+            
+            for(let a = 0; a < sentenceValue.length; a++) {
+                if(a%2 == 0)
+                    odd.push(sentenceValue[a])
+                else
+                    even.push(sentenceValue[a])
+            }
+
+            result.innerHTML = ''
+
+            for(pos in odd) 
+                result.innerHTML += odd[pos]
+            
+            for(pos in even)
+                result.innerHTML += even[pos]  
+
+            odd = []
+            even = []
+            modifiedSentence = []  
+        }
+
+        function decryptSentence() {
+            let sentenceValue = sentence.value
+
+            let initialHalf = sentenceValue.length/2
+            initialHalf = Math.ceil(initialHalf)
+            let finalHalf = sentenceValue.length - initialHalf
+
+            for(let a = 0; a < initialHalf; a++) 
+                odd.push(sentenceValue[a])
+
+            for(let a = initialHalf; a < sentenceValue.length; a++) 
+                even.push(sentenceValue[a])
+
+        
+            for(pos in odd) {
+                modifiedSentence.push(odd[pos])
+                modifiedSentence.push(even[pos])
+            }
+
+            if(sentenceValue.length%2 != 0)
+                modifiedSentence.pop()
+
+            result.innerHTML = ''
+
+            for(pos in modifiedSentence)
+                result.innerHTML += modifiedSentence[pos]
+
+            odd = []
+            even = []
+            modifiedSentence = []      
+        }
+
+        encrypt.onclick = encryptSentence
+        decrypt.onclick = decryptSentence
+    </script>
+</body>
+</html>

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cifra de Vigenère</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            text-align: center;
+            font-family: Arial, Helvetica, sans-serif;
+            
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: #a0a0a0;
+            box-shadow: inset  0  300px 300px -300px hsla(0,0%,0%,.8), 
+                        inset  0 -300px 300px -300px hsla(0,0%,0%,.8);
+        }
+
+        main {
+            max-width: 600px;
+            margin: auto;
+        }
+
+        h1 {
+            font-size: 36px;
+            color: #505050;
+            padding: 10px 0;
+        }
+
+        textarea, input {
+            width: 85%;
+            max-width: 500px;
+            border: none;
+            border-radius: 10px;
+            vertical-align: top;
+            outline: none;
+            padding: 10px;
+            font-size: 18px;
+            box-sizing: border-box;
+        }
+
+        input {
+            height: 40px;
+            margin-bottom: 15px;
+        }
+
+        textarea {
+            height: 100px;
+        }
+
+        button {
+            width: 120px;
+            height: 30px;
+            border: none;
+            background-color: #505050;
+            color: #f0f0f0;
+            border-radius: 5px;
+            margin: 15px 3px;
+            cursor: pointer;
+            transition: 0.5s;
+            outline: none;
+        }
+
+        button:hover {
+            background-color: #707070;
+        }
+
+        footer {
+            font-size: 18px;
+            font-weight: bold;
+            color: #505050;
+            margin-top: 20px;
+        }
+
+        @media screen and (min-width: 500px) {
+            textarea {
+                height: 180px;
+            } 
+        }
+        
+    </style>
+</head>
+<body>
+    <main>
+        <h1>Cifra de Vigenère</h1>
+        <input type="text" id="key" placeholder="chave">
+        <textarea id="sentence" placeholder="sentença"></textarea>
+        <br>
+        <button id="encrypt" onclick="setResultEncrypt()">Criptografar</button>
+        <button id="decrypt" onclick="setResultDecrypt()">Descriptografar</button>
+
+        <textarea id="result" placeholder="resultado"></textarea>
+    </main>
+
+    <footer>
+        <p>Criado por Edgar Oliveira Cardoso</p>
+    </footer>
+
+    <script>
+        const key = document.getElementById('key')
+        const sentence = document.getElementById('sentence')
+
+        function getKey() {
+            const keyValue = key.value.toUpperCase();
+
+            return keyValue
+        }
+
+        function getSentence() {
+            const sentenceValue = sentence.value.toUpperCase();
+
+            return sentenceValue
+        }
+
+        const replaceSpecialChars = (sentence) => {
+	        return sentence.normalize('NFD').replace(/[\u0300-\u036f]/g, '') 
+		        .replace(/([^\w]+|\s+)/g, '') 
+		        .replace(/\-\-+/g, '')	
+		        .replace(/(^-+|-+$)/, '')
+        }
+
+        function formatSentence() {
+            let format = replaceSpecialChars(getSentence())
+
+            return format
+        }
+
+        function formatKey() {
+            let format = ''
+
+            for(let pos in formatSentence()) 
+                format += getKey()[pos%getKey().length]
+                 
+            return format
+        }
+
+        function letterCode(letterCode) {
+    
+            code = letterCode.charCodeAt()-65
+
+            return code
+        }
+
+        function encryptSentence() {
+            let c = []
+            let p = []
+            let k = []
+
+            let encrypt = []
+
+            for(let pos in formatSentence()) 
+                p.push(letterCode(formatSentence()[pos]))
+            
+            for(let pos in formatKey())
+                k.push(letterCode(formatKey()[pos]))
+
+            for(let pos in formatSentence()) {
+                c = (p[pos]+k[pos])%26
+
+                encrypt.push(c)
+            }
+
+            return encrypt
+        }
+
+        function decryptSentence() {
+            let c = []
+            let p = []
+            let k = []
+
+            let decrypt = []
+
+            for(let pos in formatSentence()) 
+                c.push(letterCode(formatSentence()[pos]))
+            
+            for(let pos in formatKey())
+                k.push(letterCode(formatKey()[pos]))
+
+            for(let pos in formatSentence()) {
+                p = (c[pos]-k[pos])%26
+
+                if(p < 0)
+                    p+=26
+
+                decrypt.push(p)
+            }
+
+            return decrypt
+        }
+
+        function formatLetter(letter) {
+            let format = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
+
+            return format[letter]
+        }
+
+        function setResultEncrypt() {
+            const result = document.getElementById('result')
+
+            result.innerHTML = ''
+            
+            for(let pos in encryptSentence())
+                result.innerHTML += formatLetter(encryptSentence()[pos])
+        }
+
+        function setResultDecrypt() {
+            const result = document.getElementById('result')
+            
+            result.innerHTML = ''
+
+            for(let pos in decryptSentence())
+                result.innerHTML += formatLetter(decryptSentence()[pos])
+        }
+    </script>
+</body>
+</html>
